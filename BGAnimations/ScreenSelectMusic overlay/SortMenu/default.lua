@@ -144,6 +144,8 @@ local t = Def.ActorFrame {
 			for player in ivalues(GAMESTATE:GetHumanPlayers()) do
 				if (PROFILEMAN:IsPersistentProfile(player)) then
 					table.insert(wheel_options, {"SortBy", "Top".. ToEnumShortString(player).."Grades" })
+					table.insert(wheel_options, {"SortBy", "Popularity"..ToEnumShortString(player)})
+					table.insert(wheel_options, {"SortBy", "Recent"..ToEnumShortString(player)})
 				end
 			end
 
