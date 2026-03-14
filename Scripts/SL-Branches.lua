@@ -140,6 +140,9 @@ Branch.SSMCancel = function()
 		ANNOUNCER:SetCurrentAnnouncer("")
 		setenv("ForceThonk", false)
 	end
+	if getenv("AllowAF") == true then
+		setenv("AllowAF", false)
+	end
 
 	return Branch.TitleMenu()
 end

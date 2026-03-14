@@ -92,8 +92,9 @@ local af = Def.ActorFrame{
 			-- This prevents players from spamming thonk mode and the associated meme announcer, if present, all day in a public venue
 			if params.Name == "EnableThonk" then -- First, did we even enter the thonk mode code?
 				--SM((SL.ThonkTimeout + 6)..Hour())
+				--if true then
 				if (SL.ThonkTimeout + 6) < Hour() then -- Next check the timeout
-					setenv("ForceThonk", true) -- Set an environment variable to allow thonk
+					setenv("AllowAF", true) -- Set an environment variable to allow thonk
 					self:play()
 				else
 					SM("Recharging...")

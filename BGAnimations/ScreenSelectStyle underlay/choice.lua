@@ -218,9 +218,26 @@ local af = Def.ActorFrame{
 }
 
 -- draw as many pads as needed for this choice
-for pad in ivalues(pads) do
-	af[#af+1] = drawNinePanelPad(pad.color, pad.offset)..{
-		OffCommand=function(self) self:linear(0.2):diffusealpha(0) end
+if pads ~= nil then
+	for pad in ivalues(pads) do
+		af[#af+1] = drawNinePanelPad(pad.color, pad.offset)..{
+			OffCommand=function(self) self:linear(0.2):diffusealpha(0) end
+		}
+	end
+end
+
+-- thinking emoji
+if choiceName == "thonk" then
+	af[#af+1] = LoadActor("thonk.png")..{
+		InitCommand=function(self)
+			self:zoom(_zoom * 0.9):shadowlength(_shadow):y(-35):vibrate()
+		end
+	}
+	af[#af+1] = LoadFont("Common Normal")..{
+		Text=THEME:GetString("ScreenSelectStyle", "ThonkDesc"),
+		InitCommand=function(self)
+			self:shadowlength(1):y(80):diffuse(0.9,0.9,0.9,0.7):zoom(0.8)
+		end
 	}
 end
 

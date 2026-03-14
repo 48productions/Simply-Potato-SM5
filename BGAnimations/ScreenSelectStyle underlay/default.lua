@@ -30,7 +30,15 @@ local choices = {
 	},
 }
 
-if current_game=="dance" and ThemePrefs.Get("AllowDanceSolo") then
+-- if we are allowing Thonk mode to be selected (but it has not yet been selected yet), show it
+if AllowAF() and getenv("ForceThonk") ~= true then
+	choices[1].x = _screen.w/4-_screen.w/8
+	choices[2].x = (_screen.w/4)*2-_screen.w/8
+	choices[3].x = (_screen.w/4)*3-_screen.w/8
+	choices[4] = { name="thonk", x=_screen.w-_screen.w/8 }
+	
+-- if dance solo can be shown, show it
+elseif current_game=="dance" and ThemePrefs.Get("AllowDanceSolo") then
 	choices[1].x = _screen.w/4-_screen.w/8
 	choices[2].x = (_screen.w/4)*2-_screen.w/8
 	choices[3].x = (_screen.w/4)*3-_screen.w/8
@@ -273,19 +281,26 @@ local t = Def.ActorFrame{
 	end,
 	FinishCommand=function(self, params)
 		local style = choices[current_index].name
+		
+		if style == "thonk" then -- style "thonk" means the player wants to enable Thonk Mode - set the thonk env and move to ScreenSelectMusicThonk
+			setenv("ForceThonk", true)
+			SCREENMAN:GetTopScreen():SetNextScreenName("ScreenSelectStyleThonk")
+			SCREENMAN:GetTopScreen():StartTransitioningScreen("SM_GoToNextScreen")
+			
+		else -- select the current style as normal
+			ManageCredits(style)
+			JoinOrUnjoinPlayersMaybe(style, (params and params.PlayerNumber or nil))
 
-		ManageCredits(style)
-		JoinOrUnjoinPlayersMaybe(style, (params and params.PlayerNumber or nil))
+			-- ah, yes, techno mode
+			-- techo doesn't have styles like "single" and "double", it has "single8", "versus8", and "double8"
+			if current_game=="techno" then style = style.."8" end
 
-		-- ah, yes, techno mode
-		-- techo doesn't have styles like "single" and "double", it has "single8", "versus8", and "double8"
-		if current_game=="techno" then style = style.."8" end
-
-		-- set this now, but keep in mind that the style can change during a game session in a number
-		-- of ways, like latejoin (when available) and using SSM's SortMenu to change styles mid-game
-		GAMESTATE:SetCurrentStyle(style)
-
-		SCREENMAN:GetTopScreen():StartTransitioningScreen("SM_GoToNextScreen")
+			-- set this now, but keep in mind that the style can change during a game session in a number
+			-- of ways, like latejoin (when available) and using SSM's SortMenu to change styles mid-game
+			GAMESTATE:SetCurrentStyle(style)
+			
+			SCREENMAN:GetTopScreen():StartTransitioningScreen("SM_GoToNextScreen")
+		end
 	end,
 }
 
@@ -300,5 +315,20 @@ if PREFSMAN:GetPreference("MemoryCards") == true then
     t[#t+1] = LoadActor("./memorycard.lua")
 end
 
+-- Show a "NEW MODE!" banner if the thonk option is present
+if AllowAF() and getenv("ForceThonk") ~= true then
+	t[#t+1] = Def.ActorFrame{
+		InitCommand=function(self)
+			self:xy(_screen.w-_screen.w/4.75, _screen.cy/1.8):bounce():effectmagnitude(0,-10,0):effectperiod(0.5)
+		end,
+		LoadActor(THEME:GetPathG('bubble', ''))..{
+			InitCommand=function(self) self:baserotationz(180):zoom(0.8):diffuse(color("#F4910C")):shadowlength(1) end
+		},
+		LoadFont("Common Normal")..{
+			Text=THEME:GetString("ScreenSelectStyle", "ThonkNewMode"),
+			InitCommand=function(self) self:zoom(1.5):diffuse(0,0,0,1):y(-8) end,
+		},
+	}
+end
 
 return t

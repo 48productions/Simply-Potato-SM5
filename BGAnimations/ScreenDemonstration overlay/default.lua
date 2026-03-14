@@ -85,7 +85,8 @@ af[#af+1] = LoadFont("_upheaval_underline 80px")..{
 	InitCommand=function(self)
 		self:xy(_screen.cx,_screen.h-80):zoom(0.5):shadowlength(1.7)
 		self:visible(false):queuecommand("Refresh")
-		if getenv("ForceThonk") == true then setenv("ForceThonk", false) end -- If we entered the thonk code on the title screen but didn't press start, disable it here
+		if getenv("ForceThonk") == true then setenv("ForceThonk", false) end -- If we entered the thonk code on the title screen but didn't press start (AllowAF is true) or if ForceThonk is for some reason still true), disable it here
+		if getenv("AllowAF") == true then setenv("AllowAF", false) end
 	end,
 	OnCommand=function(self)
 		self:diffuseshift():effectperiod(1.333)

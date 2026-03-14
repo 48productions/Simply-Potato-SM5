@@ -13,6 +13,9 @@ local t = Def.ActorFrame{
 			ANNOUNCER:SetCurrentAnnouncer("")
 			setenv("ForceThonk", false)
 		end
+		if getenv("AllowAF") == true then
+			setenv("AllowAF", false)
+		end
 	end,
     OnCommand=function(self)
 		self:propagate(true):queuecommand("AnimateLogo")

@@ -5,10 +5,6 @@ local style = ThemePrefs.Get("VisualTheme")
 local t = Def.ActorFrame{
 	OffCommand=function(self)
 		self:linear(1)
-		if AllowThonk() and ANNOUNCER:DoesAnnouncerExist("Spud") then
-			ANNOUNCER:SetCurrentAnnouncer("Spud")
-			SOUND:PlayAnnouncer("title start")
-		end
 	end
 }
 

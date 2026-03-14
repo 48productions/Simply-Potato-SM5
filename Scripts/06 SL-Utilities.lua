@@ -320,16 +320,16 @@ function getNewsImg(max_news)
 end
 
 
--- Scare the thonk out of anyone who dares enable Easter Eggs on April 1st - 48
+-- Returns true if we should apply thonk mode effects (this can be the case even if the current visual theme is not thonk, mostly for april fool's)
 function AllowThonk()
- return ThemePrefs.Get("VisualTheme") == "Thonk" or AllowAF() or getenv("ForceThonk") == true
+ return ThemePrefs.Get("VisualTheme") == "Thonk" or getenv("ForceThonk") == true
 end
 
---Allow april fools day shenanigans
--- This function is used as a check to auto-enable thonk on April 1st
--- It is ALSO used as an additional check for special surprises exclusively on April 1st that shouldn't *always* be active when thonk is the current visual style - 48
+-- Allows thonk mode to be selected on ScreenSelectStyle. Returns true if either condition is met:
+--  - We are within a week of april fool's day
+--  - The konami code was entered on the title screen (env "AllowThonk" is true)
 function AllowAF()
-    return MonthOfYear()==3 and DayOfMonth()==1 and PREFSMAN:GetPreference("EasterEggs")
+    return (MonthOfYear()==3 and DayOfMonth()>=1 and DayOfMonth() <= 7 and PREFSMAN:GetPreference("EasterEggs")) or getenv("AllowAF") == true
 end
 
 --I LOVE VIDEO GAMES (changes splash text and title screen arrow positions on ScreenTitleMenu/TitleJoin and ScreenLogo)
