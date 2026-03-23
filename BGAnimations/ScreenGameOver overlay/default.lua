@@ -8,7 +8,7 @@ local logo_tween_offset = 0.13
 
 local t = Def.ActorFrame{
 	InitCommand=function(self)
-		-- Check if we forced thonk mode via the title screen pad code for this set, and disable it if so
+		-- Check if we forced thonk mode via style selection for this set, and disable it if so
 		if getenv("ForceThonk") == true then
 			ANNOUNCER:SetCurrentAnnouncer("")
 			setenv("ForceThonk", false)

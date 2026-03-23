@@ -1,5 +1,5 @@
 local af = Def.ActorFrame{
-	InitCommand=function(self) self:x(26) if AllowThonk() then self:bounce():effectclock("bgm"):effectmagnitude(20,0,0):effectperiod(1):effectoffset(1) end  end,
+	InitCommand=function(self) self:x(26) if AllowThonk() then self:bounce():effectclock("bgm"):effectmagnitude(-20,0,0):effectperiod(1):effectoffset(1) end  end,
 
 	Def.Quad{
 		InitCommand=function(self)
