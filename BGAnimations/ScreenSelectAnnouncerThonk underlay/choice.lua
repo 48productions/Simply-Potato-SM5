@@ -1,5 +1,6 @@
 local args = ...
 local choiceName = args[1].name
+local subtitle = args[1].subtitle
 local frame_y = args[1].y
 local index = args[2]
 
@@ -32,10 +33,11 @@ local af = Def.ActorFrame{
 		self:finishtweening():linear(0.125):x(_screen.w/5):effectmagnitude(0,0,0):diffusealpha(0.6):playcommand("StopPulsing")
 	end,
 
-	--Outline
+	--Border
 	Def.Quad{
-		InitCommand=function(self) self:zoomto(232, 66):diffuse(1,1,1,1):cropbottom(1) end,
-		OnCommand=function(self) self:linear(0.2):cropbottom(0) end,
+		Name="Border",
+		InitCommand=function(self) self:zoomto(232, 66):diffuse(1,1,1,1):cropbottom(0) end,
+		--OnCommand=function(self) self:linear(0.2):cropbottom(0) end,
 		GainFocusCommand=function(self) self:stoptweening():linear(0.1) end,
 		LoseFocusCommand=function(self) self:stoptweening():linear(0.1) end,
 		OffCommand=function(self) self:sleep(0.15):linear(0.2):cropbottom(1) end
@@ -45,6 +47,7 @@ local af = Def.ActorFrame{
 
 	--Background
 	Def.Quad{
+		Name="Background",
 		InitCommand=function(self) self:zoomto(230, 64):diffuse(0,0,0,1):cropbottom(1) end,
 		OnCommand=function(self) self:linear(0.2):cropbottom(0) end,
 		GainFocusCommand=function(self) self:stoptweening():linear(0.1) end,
@@ -65,11 +68,27 @@ local af = Def.ActorFrame{
 	-- Announcer Name
 	LoadFont("_upheaval_underline 80px")..{
 		Text=choiceName,
-
-		InitCommand=function(self) self:maxwidth(400):y(-4) end,
+		Name="AnnouncerName",
+		InitCommand=function(self)
+			self:maxwidth(400)
+			if subtitle ~= nil and subtitle ~= "" then -- Shrink a bit to make room for the subtitle, if there is one
+				self:zoomy(0.3):y(-14)
+			else
+				self:y(-4)
+			end
+		end,
 		OnCommand=function(self) self:diffusealpha(0):sleep(0.02):linear(0.2):diffusealpha(1):zoom(0.5) end,
 		GainFocusCommand=function(self) self:stoptweening():linear(0.1):diffuse(PlayerColor(PLAYER_1)) end,
 		LoseFocusCommand=function(self) self:stoptweening():linear(0.1):diffuse(color("#888888")) end,
+		OffCommand=function(self) self:linear(0.2):diffusealpha(0) end
+	},
+	
+	-- Subtitle
+	LoadFont("Common normal")..{
+		Text=subtitle,
+		InitCommand=function(self) self:y(18):zoomy(0.8) end,
+		GainFocusCommand=function(self) self:stoptweening():linear(0.1):diffusealpha(1) end,
+		LoseFocusCommand=function(self) self:stoptweening():linear(0.1):diffusealpha(0.8) end,
 		OffCommand=function(self) self:linear(0.2):diffusealpha(0) end
 	},
 }

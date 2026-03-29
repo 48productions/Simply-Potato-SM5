@@ -7,13 +7,15 @@ local current_game = GAMESTATE:GetCurrentGame():GetName()
 local choices = {
 	{
 		name="No Announcer",
-		desc=ScreenString("NoAnnouncer"),
+		subtitle="",
+		desc=ScreenString("AnnouncerDescNone"),
 		y=_screen.h*0.25,
 	}
 }
 
 for i,announcer in ipairs(ANNOUNCER:GetAnnouncerNames()) do
-	choices[#choices+1] = { name=announcer, y=_screen.h*0.25 + 68*i}
+	choices[#choices+1] = { name=announcer, subtitle="", y=_screen.h*0.25 + 68*i}
+	choices[#choices].desc = string.format(ScreenString("AnnouncerDesc"), announcer)
 end
 
 local current_index = 1
@@ -58,7 +60,10 @@ local function input(event)
 				end
 			end
 			if prev_index ~= current_index then af:GetChild("Change"):play() end
-
+			
+			local announcer = choices[current_index].name -- Play an example line from this announcer voice
+			if announcer == "No Announcer" then ANNOUNCER:SetCurrentAnnouncer("") else ANNOUNCER:SetCurrentAnnouncer(announcer) SOUND:PlayAnnouncer("spudpreview") end
+			
 		elseif event.GameButton == "Start" then
 			AnnouncerSelected = true
 			af:GetChild("Start"):play()
@@ -93,6 +98,8 @@ local t = Def.ActorFrame{
 		if PREFSMAN:GetPreference("MenuTimer") then
 			self:queuecommand("Listen")
 		end
+		af:GetChild("InfoWindow"):GetChild("AnnouncerName"):settext(choices[1].name)
+		af:GetChild("InfoWindow"):GetChild("FlavorText"):playcommand("Change", {text=choices[1].desc})
 	end,
 	ListenCommand=function(self)
 		local topscreen = SCREENMAN:GetTopScreen()
@@ -109,10 +116,6 @@ local t = Def.ActorFrame{
 		SCREENMAN:GetTopScreen():AddInputCallback(input)
 	end,
 	FinishCommand=function(self, params)
-		local announcer = choices[current_index].name
-		
-		if announcer ~= "No Announcer" then ANNOUNCER:SetCurrentAnnouncer(announcer) end
-		
 		SCREENMAN:GetTopScreen():StartTransitioningScreen("SM_GoToNextScreen")
 	end,
 }
@@ -132,11 +135,13 @@ t[#t+1] = Def.ActorFrame{
 	
 	-- Border
 	Def.Quad{
+		Name="Border",
 		InitCommand=function(self) self:zoomto(302, 302) end
 	},
 	
 	-- Background
 	Def.Quad{
+		Name="Background",
 		InitCommand=function(self) self:zoomto(300, 300):diffuse(0,0,0,1) end
 	},
 	
@@ -157,10 +162,10 @@ t[#t+1] = Def.ActorFrame{
 	LoadFont("common normal")..{
 		Name="FlavorText",
 		Text="",
-		InitCommand=function(self) self:zoom(1):y(100) end,
+		InitCommand=function(self) self:zoom(1):y(100):maxwidth(280) end,
 		ChangeCommand=function(self, args)
 			local text = args.text ~= nil and args.text or ""
-			self:finishtweening():cropright(1):settext(text):linear(1):cropright(0)
+			self:finishtweening():cropright(1):settext(text):linear(0.75):cropright(0)
 		end,
 	},
 }

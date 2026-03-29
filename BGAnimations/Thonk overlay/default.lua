@@ -11,6 +11,8 @@ local ss_playmode_items = {}
 
 local splash_table = {}
 
+local announcerCount = #ANNOUNCER:GetAnnouncerNames() + 1
+
 taronuke_thonk_aft = nil
 taronuke_thonk_giant1 = nil
 taronuke_thonk_giant2 = nil
@@ -95,6 +97,41 @@ local function mods_randomize_positions(power,skew)
 
 	end
 
+	if SCREENMAN:GetTopScreen():GetName() == "ScreenSelectAnnouncerThonk" then
+		if underlay:GetChild("") then
+
+			for i=0,announcerCount do
+				local a = i == 0 and underlay:GetChild("InfoWindow") or underlay:GetChild("")[i]
+				if a then
+
+					for j,b in pairs(a:GetChildren()) do
+
+						if b then
+
+							local id = "ScreenSelectAnnouncerThonkitem_"..i.."_"..j
+
+							if not base_positions[id] then
+								base_positions[id] = {x = b:GetX(), y = b:GetY()}
+							end
+
+							local zm = 1
+
+							if j == "Background" or j == "Border" then -- background quads
+								
+								b:finishtweening():x( base_positions[id].x + math.random(-60*power,60*power) ):y( base_positions[id].y + math.random(-60*power,60*power) ):rotationz( math.random(0,360) ):decelerate(sk*(60/bpm)):skewx(sk*.6)
+								
+							else -- text
+							
+								b:finishtweening():x( base_positions[id].x + math.random(-60*power,60*power) ):y( base_positions[id].y + math.random(-60*power,60*power) ):rotationz( math.random(0,360) ):decelerate(sk*(60/bpm)):skewx(sk*.6)
+								
+							end
+						end
+					end
+				end
+			end
+
+		end
+	end
 end
 
 local lr_pos = 1
@@ -183,6 +220,46 @@ local function mods_shuffle_lr(strength)
 
 	end
 
+	if SCREENMAN:GetTopScreen():GetName() == "ScreenSelectAnnouncerThonk" then
+		if underlay:GetChild("") then
+
+			local k = 1
+			local k2 = 1
+			for i=0,announcerCount do
+				local a = i == 0 and underlay:GetChild("InfoWindow") or underlay:GetChild("")[i]
+				if a then
+
+					for j,b in pairs(a:GetChildren()) do
+
+						if b then
+
+							local id = "ScreenSelectAnnouncerThonkitem_"..i.."_"..j
+
+							if not base_positions[id] then
+								base_positions[id] = {x = b:GetX(), y = b:GetY()}
+							end
+
+							local zm = 1
+
+							if j == "Background" or j == "Border" then -- background quads
+							
+								b:finishtweening():y( base_positions[id].y + ((k2%2)*2-1) * strength*lr_pos/zm ):x( base_positions[id].x ):rotationz( 0 ):skewx(0)
+								
+							else -- text
+							
+								b:finishtweening():x( base_positions[id].x + ((k%2)*2-1) * strength*lr_pos/zm ):y( base_positions[id].y + 40 ):rotationz( 0 ):rotationy( 0 ):skewx(0)
+								
+							end
+						end
+					end
+					k = k+1
+					k2 = k2+1
+				end
+			end
+
+		end
+	end
+
 	lr_pos = lr_pos*-1
 
 end
@@ -268,6 +345,46 @@ local function mods_shuffle_ud(strength)
 
 		end
 
+	end
+
+	if SCREENMAN:GetTopScreen():GetName() == "ScreenSelectAnnouncerThonk" then
+		if underlay:GetChild("") then
+
+			local k = 1
+			local k2 = 1
+			for i=0,announcerCount do
+				local a = i == 0 and underlay:GetChild("InfoWindow") or underlay:GetChild("")[i]
+				if a then
+
+					for j,b in pairs(a:GetChildren()) do
+
+						if b then
+
+							local id = "ScreenSelectAnnouncerThonkitem_"..i.."_"..j
+
+							if not base_positions[id] then
+								base_positions[id] = {x = b:GetX(), y = b:GetY()}
+							end
+
+							local zm = 1
+
+							if j == "Background" or j == "Border" then -- background quads
+							
+								b:finishtweening():x( base_positions[id].x + ((1%2)*2-1) * strength*ud_pos/zm ):y( base_positions[id].y ):rotationz( 0 ):skewx(0)
+								
+							else -- text
+							
+								b:finishtweening():y( base_positions[id].y + 40 + ((k%2)*2-1) * strength*ud_pos/zm ):x( base_positions[id].x ):rotationz( 0 ):rotationy( 0 ):skewx(0)
+								
+							end
+						end
+					end
+					k = k+1
+					k2 = k2+1
+				end
+			end
+
+		end
 	end
 
 	ud_pos = ud_pos*-1
@@ -1012,6 +1129,63 @@ local Update = function(self, delta)
 
 
 
+	end
+	
+	if SCREENMAN:GetTopScreen():GetName() == "ScreenSelectAnnouncerThonk" then
+		if underlay:GetChild("") then
+
+			local k = 1
+			local k2 = 1
+			for i=0,announcerCount do
+				local a = i == 0 and underlay:GetChild("InfoWindow") or underlay:GetChild("")[i]
+				if a then
+
+					for j,b in pairs(a:GetChildren()) do
+
+						if b then
+
+							local id = "ScreenSelectAnnouncerThonkitem_"..i.."_"..j
+
+							if not base_positions[id] then
+								base_positions[id] = {x = b:GetX(), y = b:GetY()}
+							end
+
+							local zm = 1
+
+							if j == "Background" or j == "Border" then -- background quads
+								if mods_beat_enabled or mods_bob_enabled then
+									b:finishtweening():x( base_positions[id].x ):y( base_positions[id].y ):rotationz( 0 ):skewx( 0 )
+
+									if mods_beat_enabled then
+										b:finishtweening():addx( beatBounce((1/zm)*32*((k%2)*2-1)) )
+									end
+									if mods_bob_enabled then
+										b:finishtweening():addx( 1/zm * 64*math.sin(beat*math.pi*0.25)*((k%2)*2-1) ):skewx( math.sin(beat*math.pi*0.5) )
+									end
+
+								end
+							else -- text
+							
+								if mods_beat_enabled or mods_bob_enabled then
+									b:finishtweening():x( base_positions[id].x ):y( base_positions[id].y ):rotationy( 0 ):rotationz( 0 ):skewx( 0 )
+
+									if mods_beat_enabled then
+										b:finishtweening():addx( beatBounce((1/zm)*32*((k2%2)*2-1)) )
+									end
+									if mods_bob_enabled then
+										b:finishtweening():addx( 1/zm * 64*math.sin(beat*math.pi*0.25)*((k2%2)*2-1) ):rotationy( 90*beat )
+									end
+
+								end
+							end
+						end
+					end
+					k = k+1
+					k2 = k2+1
+				end
+			end
+
+		end
 	end
 
 	lastbeat = beat
